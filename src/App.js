@@ -1,6 +1,7 @@
 import React from 'react';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {DragDropContext} from 'react-dnd';
+import update from 'immutability-helper'
 
 import './App.css';
 
@@ -12,6 +13,16 @@ class App extends React.Component {
 	state = {
 		allImages: [],
 		storageImages: [],
+	}
+
+	moveCard = (dragIndex, hoverIndex, type) => {
+		const dragCard = this.state[type][dragIndex];
+
+		this.setState(prevState => ({
+			[type]: update(prevState[type], {
+				$splice: [[dragIndex, 1], [hoverIndex, 0, dragCard]],
+			}),
+		}))
 	}
 
 	updateImages = (images) => this.setState(prevState => ({
@@ -42,11 +53,13 @@ class App extends React.Component {
 						<Images
 							updateImages={this.updateImages}
 							allImages={allImages}
+							moveCard={this.moveCard}
 						/>
 						<div className="App-separator" />
 						<DroppedImages
 							moveToStorage={this.moveToStorage}
 							storageImages={storageImages}
+							moveCard={this.moveCard}
 						/>
 					</div>
 				</div>	

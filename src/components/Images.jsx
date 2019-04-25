@@ -4,7 +4,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import uniqueId from 'lodash.uniqueid';
 
 import Image from './Image';
-import { IMAGE } from '../constants/constants';
+import { IMAGE, ALL_IMAGES_STORAGE } from '../constants/constants';
 
 const style = {
 	display: 'flex',
@@ -14,7 +14,7 @@ const style = {
 	overflowY: 'auto',
 }
 
-const Images = ({canDrop, isOver, connectDropTarget, allImages}) => {
+const Images = ({canDrop, isOver, connectDropTarget, allImages, moveCard}) => {
 	let backgroundColor = '#BADEE8';
 	const isActive = canDrop && isOver;
 
@@ -36,7 +36,14 @@ const Images = ({canDrop, isOver, connectDropTarget, allImages}) => {
 					{isOver && 'Drop the files'}
 				</h3>
 				
-				{allImages.map((item, index) => <Image key={index} item={item} />)}
+				{allImages.map((item, index) => (
+					<Image
+						key={item.id}
+						item={item}
+						index={index}
+						moveCard={moveCard}
+					/>)
+				)}
 			</div>
 		)
 	)
@@ -48,8 +55,12 @@ const Images = ({canDrop, isOver, connectDropTarget, allImages}) => {
 				if (monitor.getItem().files || !allImages.some(item => item.id === monitor.getItem().item.id)) {
 					updateImages(
 						monitor.getItem().files
-							? monitor.getItem().files.map(file => ({file, id: uniqueId()}))
-							: [monitor.getItem().item]
+							? monitor.getItem().files.map(file => ({
+								id: uniqueId(),
+								file,
+								type: ALL_IMAGES_STORAGE,
+							}))
+							: [{...monitor.getItem().item, type: ALL_IMAGES_STORAGE}]
 					)
 				}
 			},

@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react'
-import { DropTarget } from 'react-dnd'
+import {DropTarget} from 'react-dnd'
 import Image from './Image';
-import {IMAGE} from '../constants/constants';
+import {IMAGE, IMAGES_STORAGE} from '../constants/constants';
 
 const style = {
 	display: 'flex',
@@ -13,7 +13,7 @@ const style = {
 
 class DroppedImages extends PureComponent {
 	render() {
-		const {canDrop, isOver, connectDropTarget, storageImages} = this.props;
+		const {canDrop, isOver, connectDropTarget, storageImages, moveCard} = this.props;
 
 		let backgroundColor = '#C6EABA';
 		const isActive = canDrop && isOver;
@@ -35,7 +35,14 @@ class DroppedImages extends PureComponent {
 						{!isOver && canDrop && 'Drag the files here'}
 						{isOver && 'Drop the files'}
 					</h3>
-					{storageImages.map((item, index) => <Image key={index} item={item} />)}
+					{storageImages.map((item, index) => (
+						<Image
+							key={item.id}
+							item={item}
+							index={index}
+							moveCard={moveCard}
+						/>)
+					)}
 				</div>
 			)
 		)
@@ -47,7 +54,7 @@ export default DropTarget(
 	{
 		drop: ({moveToStorage, storageImages}, monitor) => {
 			if (!storageImages.some(item => item.id === monitor.getItem().item.id)) {
-				moveToStorage([monitor.getItem().item])
+				moveToStorage([{...monitor.getItem().item, type: IMAGES_STORAGE}])
 			}
 		},
 	},
